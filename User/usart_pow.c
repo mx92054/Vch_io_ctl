@@ -15,6 +15,7 @@ u8 POW_bRecv;
 u8 POW_Frame_len = 100;
 u8 uCurPowNo = 0;				 //当前正在查询的电源板号
 short uPowerStatus[2 * POW_NUM]; //保存上次电源的开关状态
+u32 ulPowTicks[POW_NUM];
 
 //-------------------------------------------------------------------------------
 //	@brief	中断初始化
@@ -118,7 +119,10 @@ void POW_Init(void)
 	POW_Config(POW_BAUDRATE);
 
 	for (i = 0; i < 2 * POW_NUM; i++)
+	{
 		uPowerStatus[i] = wReg[POW_SW_ADR + i];
+		ulPowTicks[i / 2] = GetCurTick();
+	}
 
 	POW_curptr = 0;
 	POW_bRecv = 0;
@@ -131,6 +135,8 @@ void POW_Init(void)
 //-------------------------------------------------------------------------------
 void POW_TxCmd(void)
 {
+	int adr1, adr2;
+
 	if (POW_bRecv == 1) //如果当前未完成接收，则通信错误计数器递增
 	{
 		wReg[POW_COM_FAIL + uCurPowNo]++;
@@ -139,13 +145,16 @@ void POW_TxCmd(void)
 	POW_curptr = 0;
 	POW_bRecv = 1;
 
-	if (wReg[POW_SW_ADR + 2 * uCurPowNo] != uPowerStatus[2 * uCurPowNo] ||
-		wReg[POW_SW_ADR + 2 * uCurPowNo + 1] != uPowerStatus[2 * uCurPowNo + 1])
-	{																			   //电源板开关指令
-		POW_Swbuf[3] = 0x61 + uCurPowNo;										   //电源板站号
-		POW_Swbuf[6] = (wReg[POW_SW_ADR + 2 * uCurPowNo] == 0) ? 0x00 : 0x01;	  //通道1开关
-		POW_Swbuf[6] |= (wReg[POW_SW_ADR + 2 * uCurPowNo + 1] == 0) ? 0x00 : 0x10; //通道2开关
-		POW_Swbuf[7] = POW_Swbuf[3] + POW_Swbuf[4] + POW_Swbuf[5] + POW_Swbuf[6];  //checksum
+	adr1 = 2 * uCurPowNo;
+	adr2 = POW_SW_ADR + adr1;
+	if (wReg[adr2] != uPowerStatus[adr1] ||
+		wReg[adr2 + 1] != uPowerStatus[adr1 + 1])
+	{
+		POW_Swbuf[3] = 0x61 + uCurPowNo;					 //电源板站号
+		POW_Swbuf[6] = (wReg[adr2] == 0) ? 0x00 : 0x01;		 //通道1开关
+		POW_Swbuf[6] |= (wReg[adr2 + 1] == 0) ? 0x00 : 0x10; //通道2开关
+		POW_Swbuf[7] = POW_Swbuf[3] + POW_Swbuf[4] +		 //checksum
+					   POW_Swbuf[5] + POW_Swbuf[6];			 //checksum
 		Usart_SendBytes(USART_POW, POW_Swbuf, 9);
 		POW_Frame_len = 9;
 	}
@@ -172,6 +181,7 @@ void POW_Task(void)
 	u8 nStat;
 	char *ptr;
 	short *pVal;
+	u32 tick;
 
 	if (POW_curptr < POW_Frame_len) // 未收到完整的數據幀
 		return;
@@ -185,7 +195,8 @@ void POW_Task(void)
 
 	if (POW_buffer[4] == 0x81) //是讀取電源板參數命令
 	{
-		ptr = &POW_buffer[6];
+		tick = GetCurTick();
+		ptr = POW_buffer + 6;
 		pVal = &wReg[POW_SAVE_ADR + nStat * 6];
 		for (i = 0; i < 6; i++)
 		{
@@ -194,6 +205,8 @@ void POW_Task(void)
 			pVal++;
 		}
 		wReg[POW_COM_SUCS + nStat]++;
+		wReg[POW_COM_TIM + nStat] = tick - ulPowTicks[nStat];
+		ulPowTicks[nStat] = tick;
 	}
 
 	if (POW_buffer[4] == 0x82) //是控制电源开关指令
