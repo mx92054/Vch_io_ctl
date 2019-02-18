@@ -1,0 +1,59 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: chen ming, IDSSE, LIC=FQQ9U-S4E6B-48IFA-1PZJX-9SM4T-37Y3G
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.23
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+Assembler:       Armasm.exe V5.06 update 4 (build 422)
+Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
+Library Manager: ArmAr.exe V5.06 update 4 (build 422)
+Hex Converter:   FromElf.exe V5.06 update 4 (build 422)
+CPU DLL:         SARMCM3.DLL V5.23
+Dialog DLL:      DCM.DLL V1.15.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.23.0
+Dialog DLL:      TCM.DLL V1.27.0.0
+ 
+<h2>Project:</h2>
+E:\SBC\Vech_mb_2\Project\RVMDK（uv5）\Vehicle_mb_2.uvprojx
+Project File Date:  02/18/2019
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target '采矿车通信板2#'
+compiling usart_pow.c...
+..\..\User\usart_pow.c(142): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  	Usart_SendBytes(
+SART_POW, POW_Txbuf, 8);
+..\..\User\usart_pow.c(130): warning:  #177-D: variable "uCRC"  was declared but never referenced
+  	u16 uCRC;
+..\..\User\usart_pow.c(170): warning:  #186-D: pointless comparison of unsigned integer with zero
+  	if (nStat < 0 || nStat >= POW_NUM)
+..\..\User\usart_pow.c(176): warning:  #513-D: a value of type "u16 *" cannot be assigned to an entity of type "short *"
+  		pVal = &wReg[
+OW_SAVE_ADR + nStat * 6];
+..\..\User\usart_pow.c(157): warning:  #177-D: variable "bErr"  was declared but never referenced
+  	int bErr, i;
+..\..\User\usart_pow.c(161): warning:  #177-D: variable "tick"  was declared but never referenced
+  	u32 tick;
+..\..\User\usart_pow.c: 6 warnings, 0 errors
+linking...
+Program Size: Code=7388 RO-data=972 RW-data=124 ZI-data=3572  
+FromELF: creating hex file...
+"..\..\Output\Template.axf" - 0 Error(s), 6 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_____________2_
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>
