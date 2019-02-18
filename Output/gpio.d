@@ -2,7 +2,7 @@
 ..\..\output\gpio.o: ..\..\User\gpio.h
 ..\..\output\gpio.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 ..\..\output\gpio.o: ..\..\Libraries\CMSIS\Include\core_cm4.h
-..\..\output\gpio.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\gpio.o: D:\ExtProgram\keil\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\gpio.o: ..\..\Libraries\CMSIS\Include\core_cmInstr.h
 ..\..\output\gpio.o: ..\..\Libraries\CMSIS\Include\core_cmFunc.h
 ..\..\output\gpio.o: ..\..\Libraries\CMSIS\Include\core_cmSimd.h

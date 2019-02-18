@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\..\Output\Template.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\..\Output\Template.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Feb 18 17:23:51 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon Feb 18 20:04:31 2019
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -716,7 +716,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Modbus_task
 </UL>
 
-<P><STRONG><a name="[9e]"></a>POW_Init</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, usart_pow.o(i.POW_Init))
+<P><STRONG><a name="[9e]"></a>POW_Init</STRONG> (Thumb, 74 bytes, Stack size 8 bytes, usart_pow.o(i.POW_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = POW_Init &rArr; POW_Config &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;POW_Config
@@ -724,14 +724,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[b6]"></a>POW_Task</STRONG> (Thumb, 102 bytes, Stack size 20 bytes, usart_pow.o(i.POW_Task))
+<P><STRONG><a name="[b6]"></a>POW_Task</STRONG> (Thumb, 152 bytes, Stack size 20 bytes, usart_pow.o(i.POW_Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = POW_Task
 </UL>
 <BR>[Called By]<UL><LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9f]"></a>POW_TxCmd</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, usart_pow.o(i.POW_TxCmd))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = POW_TxCmd &rArr; Usart_SendBytes
+<P><STRONG><a name="[9f]"></a>POW_TxCmd</STRONG> (Thumb, 200 bytes, Stack size 32 bytes, usart_pow.o(i.POW_TxCmd))
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = POW_TxCmd &rArr; Usart_SendBytes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Usart_SendBytes
 </UL>
@@ -908,7 +908,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f429_439xx.o(RESET)
 </UL>
-<P><STRONG><a name="[51]"></a>USART6_IRQHandler</STRONG> (Thumb, 120 bytes, Stack size 16 bytes, usart_pow.o(i.USART6_IRQHandler))
+<P><STRONG><a name="[51]"></a>USART6_IRQHandler</STRONG> (Thumb, 112 bytes, Stack size 16 bytes, usart_pow.o(i.USART6_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = USART6_IRQHandler &rArr; USART_GetITStatus
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData

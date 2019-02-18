@@ -37,6 +37,7 @@
 #define POW_COM_TIM 70         //通信成功间隔寄存器地址
 #define POW_COM_SUCS 80        //通信成功次数寄存器地址
 #define POW_COM_FAIL 90        //通信失败次数寄存器地址
+#define POW_SW_ADR 120         //电源模块开关控制地址
 
 void POW_Init(void);
 void POW_Task(void);

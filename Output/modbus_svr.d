@@ -1,9 +1,9 @@
 ..\..\output\modbus_svr.o: ..\..\User\Modbus_svr.c
-..\..\output\modbus_svr.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\modbus_svr.o: D:\ExtProgram\keil\ARM\ARMCC\Bin\..\include\string.h
 ..\..\output\modbus_svr.o: ..\..\User\Modbus_svr.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\CMSIS\Include\core_cm4.h
-..\..\output\modbus_svr.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\modbus_svr.o: D:\ExtProgram\keil\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\CMSIS\Include\core_cmInstr.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\CMSIS\Include\core_cmFunc.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\CMSIS\Include\core_cmSimd.h
@@ -39,4 +39,4 @@
 ..\..\output\modbus_svr.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fmc.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_ltdc.h
 ..\..\output\modbus_svr.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_sai.h
-..\..\output\modbus_svr.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\modbus_svr.o: D:\ExtProgram\keil\ARM\ARMCC\Bin\..\include\stdio.h
