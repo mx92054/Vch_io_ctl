@@ -31,21 +31,12 @@
 #define SWB_USART_IRQHandler USART3_IRQHandler
 
 //----------------------------------------------------------------
-#define SWB_BAUDRATE wReg[107]  //1#编码器通信速度
-#define SWB_STATION wReg[108]   //1#编码器站地址
-#define SWB_START_ADR wReg[109] //1#编码器参数首地址
-#define SWB_REG_LEN wReg[110]   //1#编码器参数长度
-
-#define SWB_CUR_ANG wReg[10]  //1#编码器当前角度
-#define SWB_CUR_TICK wReg[11] //1#编码器当前角度
-#define SWB_CUR_DETA wReg[12] //1#编码器当前角度
-#define SWB_CUR_SPD wReg[13]  //1#编码器当前角度
-#define SWB_LST_ANG wReg[14]  //1#编码器当前角度
-#define SWB_LST_TICK wReg[15] //1#编码器当前角度
-#define SWB_LST_DETA wReg[16] //1#编码器当前角度
-#define SWB_AVG_SPD wReg[17]  //1#编码器当前角度
-#define SWB_COM_FAIL wReg[18] //1#编码器当前角度
-#define SWB_COM_SUCS wReg[19] //1#编码器当前角度
+#define SWB_BAUDRATE wReg[107] //1#编码器通信速度
+#define SWB_COM_FAIL wReg[86]
+#define SWB_COM_SUCS wReg[96] 
+#define SWB_DOB_ADR 132 //继电器板起始地址
+#define SWB_TMP_ADR 37  //温度起始地址
+#define SWB_LEK_ADR 42  //漏水检测起始地址
 
 void SWB_Init(void);
 void SWB_TxCmd(void);

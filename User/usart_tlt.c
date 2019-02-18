@@ -5,7 +5,7 @@
 #include "stm32f4xx_conf.h"
 
 extern u8 bChanged;
-extern u16 wReg[];
+extern short wReg[];
 
 uint8_t TLT_frame[8] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 u8 TLT_buffer[256];

@@ -4,18 +4,15 @@
 #include "stm32f4xx_conf.h"
 #include "SysTick.h"
 
-extern u16 wReg[];
+extern short wReg[];
 
-char POW_Txbuf[8] = {0xFF, 0xFF, 0xA5, 0x61, 0x01, 0x05, 0xCC, 0x26};
-char POW_Swbuf[9] = {0xFF, 0xFF, 0xA5, 0x61, 0x02, 0x06, 0x00, 0xCC, 0x26};
+u8 POW_Txbuf[8] = {0xFF, 0xFF, 0xA5, 0x61, 0x01, 0x05, 0xCC, 0x26};
+u8 POW_Swbuf[9] = {0xFF, 0xFF, 0xA5, 0x61, 0x02, 0x06, 0x00, 0xCC, 0x26};
 char POW_buffer[256];
 u8 POW_curptr;
 u8 POW_bRecv;
 
-float fDepth;
-float fHead, fPitch, fRoll;
-
-u32 ulLastPOWTicks, ulLastHprTicks;
+u8 POW_Frame_len = 100;
 u8 uCurPowNo = 0;				 //当前正在查询的电源板号
 short uPowerStatus[2 * POW_NUM]; //保存上次电源的开关状态
 
@@ -134,9 +131,7 @@ void POW_Init(void)
 //-------------------------------------------------------------------------------
 void POW_TxCmd(void)
 {
-	u16 uCRC;
-
-	if (POW_bRecv != 0) //如果当前未完成接收，则通信错误计数器递增
+	if (POW_bRecv == 1) //如果当前未完成接收，则通信错误计数器递增
 	{
 		wReg[POW_COM_FAIL + uCurPowNo]++;
 	}
@@ -152,17 +147,17 @@ void POW_TxCmd(void)
 		POW_Swbuf[6] |= (wReg[POW_SW_ADR + 2 * uCurPowNo + 1] == 0) ? 0x00 : 0x10; //通道2开关
 		POW_Swbuf[7] = POW_Swbuf[3] + POW_Swbuf[4] + POW_Swbuf[5] + POW_Swbuf[6];  //checksum
 		Usart_SendBytes(USART_POW, POW_Swbuf, 9);
+		POW_Frame_len = 9;
 	}
 	else
 	{															   //电源板状态查询
 		POW_Txbuf[3] = 0x61 + uCurPowNo;						   //address
 		POW_Txbuf[6] = POW_Txbuf[3] + POW_Txbuf[4] + POW_Txbuf[5]; //checksum
 		Usart_SendBytes(USART_POW, POW_Txbuf, 8);
+		POW_Frame_len = 29;
 	}
 
-	uCurPowNo++; //board address + 1
-	if (uCurPowNo >= POW_NUM)
-		uCurPowNo = 0;
+	uCurPowNo = (uCurPowNo + 1) % POW_NUM; //board address + 1
 }
 //-------------------------------------------------------------------------------
 //	@brief	接收数据处理
@@ -173,20 +168,19 @@ void POW_TxCmd(void)
 //-------------------------------------------------------------------------------
 void POW_Task(void)
 {
-	int bErr, i;
+	int i;
 	u8 nStat;
 	char *ptr;
 	short *pVal;
-	u32 tick;
 
-	if (POW_bRecv != 2) // 未收到完整的數據幀
+	if (POW_curptr < POW_Frame_len) // 未收到完整的數據幀
 		return;
 
 	if (POW_buffer[0] != 0xFF || POW_buffer[1] != 0xFF || POW_buffer[2] != 0xA5)
 		return; //幀格式錯誤
 
 	nStat = POW_buffer[3] - 0x61;
-	if (nStat < 0 || nStat >= POW_NUM)
+	if (nStat >= POW_NUM)
 		return; //地址錯誤
 
 	if (POW_buffer[4] == 0x81) //是讀取電源板參數命令
@@ -208,7 +202,6 @@ void POW_Task(void)
 		uPowerStatus[2 * nStat + 1] = wReg[POW_SW_ADR + 2 * i + 1];
 	}
 
-	POW_curptr = 0;
 	POW_bRecv = 0;
 }
 
@@ -217,7 +210,6 @@ void POW_Task(void)
  *	@param	None
  *	@retval	None
  ********************************************************************************/
-int POW_Frame_len = 100;
 void POW_USART_IRQHandler(void)
 {
 	u8 ch;
@@ -225,25 +217,7 @@ void POW_USART_IRQHandler(void)
 	if (USART_GetITStatus(USART_POW, USART_IT_RXNE) != RESET) //判断读寄存器是否非空
 	{
 		ch = USART_ReceiveData(USART_POW); //将读寄存器的数据缓存到接收缓冲区里
-
-		if (ch == 0x26 && POW_curptr >= POW_Frame_len - 1) // Is tail of frame?
-		{
-			POW_buffer[POW_curptr] = ch;
-			POW_bRecv = 2;
-		}
-
-		if (POW_curptr > 0) // Is middle of frame ?
-			POW_buffer[POW_curptr++] = ch;
-
-		if (ch == 0xFF && POW_curptr == 0) // need receive frame
-		{
-			POW_buffer[POW_curptr++] = ch;
-		}
-
-		if (POW_curptr == 6) //技術通信幀的總長度
-		{
-			POW_Frame_len = ch;
-		}
+		POW_buffer[POW_curptr++] = ch;
 	}
 
 	if (USART_GetITStatus(USART_POW, USART_IT_TXE) != RESET)

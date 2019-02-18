@@ -5,17 +5,22 @@
 #include "stm32f4xx_conf.h"
 
 extern u8 bChanged;
-extern u16 wReg[];
+extern short wReg[];
 
-uint8_t SWB_frame[8] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 u8 SWB_buffer[256];
 u8 SWB_curptr;
 u8 SWB_bRecv;
-u8 SWB_frame_len = 85;
-u8 SWB_bFirst = 1 ;
+u8 SWB_frame_len = 16;
+u8 SWB_bFirst = 1;
 u32 ulSWBTick = 0;
 
-SpeedValueQueue qSWB;
+u8 SWB_DOB_buf[10] = {0xFF, 0xFF, 0xA5, 0x30, 0x02, 0x06, 0x00, 0x00, 0xCC, 0x26}; //继电器板命令格式
+u8 SWB_TMP_buf[8] = {0xFF, 0xFF, 0xA5, 0x32, 0x01, 0x05, 0xCC, 0x26};              //温度板命令格式
+u8 SWB_INS_buf[8] = {0xFF, 0xFF, 0xA5, 0x31, 0x01, 0x05, 0xCC, 0x26};              //漏水板命令格式
+u8 curDOB = 0;                                                                     //当前输出的继电器板
+u8 bComTmp = 1;
+short sCurStatus[3];             //当前需要方面温度板
+short sLstStatus[3] = {0, 0, 0}; //当前开关量状态
 
 //-------------------------------------------------------------------------------
 //	@brief	中断初始化
@@ -118,11 +123,10 @@ void SWB_Init(void)
 
     SWB_curptr = 0;
     SWB_bRecv = 0;
-    SWB_COM_FAIL = 0;
-    SWB_frame_len = 2 * SWB_REG_LEN + 5;
     ulSWBTick = GetCurTick();
 
-    SpdQueueInit(&qSWB);
+    SWB_TMP_buf[6] = SWB_TMP_buf[3] + SWB_TMP_buf[4] + SWB_TMP_buf[5];
+    SWB_INS_buf[6] = SWB_INS_buf[3] + SWB_INS_buf[4] + SWB_INS_buf[5];
 }
 
 //-------------------------------------------------------------------------------
@@ -132,7 +136,8 @@ void SWB_Init(void)
 //-------------------------------------------------------------------------------
 void SWB_TxCmd(void)
 {
-    u16 uCRC;
+    int i;
+    short *ptr;
 
     if (SWB_bRecv == 1) //如果当前未完成接收，则通信错误计数器递增
         SWB_COM_FAIL++;
@@ -140,21 +145,37 @@ void SWB_TxCmd(void)
     SWB_curptr = 0;
     SWB_bRecv = 1;
 
-    if (bChanged || SWB_bFirst)
+    ptr = &wReg[SWB_DOB_ADR + 9 * curDOB];
+    sCurStatus[curDOB] = 0;
+    for (i = 0; i < 9; i++)
     {
-        SWB_frame[0] = SWB_STATION;                   //station number
-        SWB_frame[2] = (SWB_START_ADR & 0xff00) >> 8; //start address high
-        SWB_frame[3] = SWB_START_ADR & 0x00ff;        //start address low
-        SWB_frame[4] = (SWB_REG_LEN & 0xff00) >> 8;   //length high
-        SWB_frame[5] = SWB_REG_LEN & 0x00ff;          //length low
-        uCRC = CRC16(SWB_frame, 6);
-        SWB_frame[6] = uCRC & 0x00FF;        //CRC low
-        SWB_frame[7] = (uCRC & 0xFF00) >> 8; //CRC high
-        bChanged++;
-        SWB_bFirst = 0;
+        sCurStatus[curDOB] |= (*ptr++ == 0) ? 0x0000 : (0x0001 << i);
     }
 
-    Usart_SendBytes(USART_SWB, SWB_frame, 8);
+    if (sCurStatus[curDOB] != sLstStatus[curDOB]) //继电器状态发生改变
+    {
+        SWB_DOB_buf[3] = 0x30 - curDOB;
+        SWB_DOB_buf[6] = sCurStatus[curDOB] & 0x00FF;
+        SWB_DOB_buf[7] = (sCurStatus[curDOB] & 0xFF00) >> 8;
+        SWB_DOB_buf[8] = SWB_DOB_buf[3] + SWB_DOB_buf[4] +
+                         SWB_DOB_buf[5] + SWB_DOB_buf[6] + SWB_DOB_buf[7];
+        Usart_SendBytes(USART_SWB, SWB_DOB_buf, 10);
+        curDOB = (curDOB + 1) % 3;
+        SWB_frame_len = 8;
+        return;
+    }
+
+    if (bComTmp) //读取温度状态
+    {
+        Usart_SendBytes(USART_SWB, SWB_TMP_buf, 8);
+        SWB_frame_len = 16;
+    }
+    else //读取漏水状态
+    {
+        Usart_SendBytes(USART_SWB, SWB_INS_buf, 8);
+        SWB_frame_len = 10;
+    }
+    bComTmp = (bComTmp + 1) % 2;
 }
 
 /*
@@ -164,43 +185,50 @@ void SWB_TxCmd(void)
  */
 void SWB_Task(void)
 {
-    u32 tick;
+    int i;
+    u8 *ptr;
 
-    if (SWB_curptr < SWB_frame_len)
+    if (SWB_curptr < SWB_frame_len)  // 未收到完整的數據幀
         return;
 
-    if (SWB_buffer[0] != SWB_STATION || SWB_buffer[1] != 0x03) //站地址判断
-        return;
+    if (SWB_buffer[0] != 0xFF || SWB_buffer[1] != 0xFF || SWB_buffer[2] != 0xA5)
+        return; //幀格式錯誤
 
-    if (SWB_buffer[2] != 2 * SWB_REG_LEN) //数值长度判读
-        return;
-
-    tick = GetCurTick();
-    SWB_LST_ANG = SWB_CUR_ANG;   //上次编码器值
-    SWB_LST_TICK = SWB_CUR_TICK; //上次计时器值
-    SWB_LST_DETA = SWB_CUR_DETA; //上次角度变化值
-
-    SWB_CUR_ANG = SWB_buffer[3] << 0x08 | SWB_buffer[4]; //本次编码器值
-    SWB_CUR_TICK = tick - ulSWBTick;                      //本次计时器值
-    ulSWBTick = tick;                                      //保存计时器
-    SWB_CUR_DETA = SWB_CUR_ANG - SWB_LST_ANG;            //本次角度变化量
-    if (SWB_CUR_ANG < 1024 && SWB_LST_ANG > 3072)
+    switch (SWB_buffer[3])
     {
-        SWB_CUR_DETA = SWB_CUR_ANG - SWB_LST_ANG + 4096;
-    }
-    if (SWB_CUR_ANG > 3072 && SWB_LST_ANG < 1024)
-    {
-        SWB_CUR_DETA = SWB_CUR_ANG - SWB_LST_ANG - 4096;
-    }
-    if (SWB_CUR_TICK != 0)
-        SWB_CUR_SPD = SWB_CUR_DETA * 1000 / SWB_CUR_TICK; //本次速度
+    case 0x30: //1#继电器板
+        sLstStatus[0] = sCurStatus[0];
+        break;
 
-    SpdQueueIn(&qSWB, SWB_CUR_DETA, SWB_CUR_TICK);
-    SWB_AVG_SPD = SpdQueueAvgVal(&qSWB); //10次平均速度
+    case 0x29: //2#继电器板
+        sLstStatus[1] = sCurStatus[1];
+        break;
+
+    case 0x28: //3#继电器板
+        sLstStatus[2] = sCurStatus[2];
+        break;
+
+    case 0x32: //温度板
+        ptr = SWB_buffer + 4;
+        for (i = 0; i < 5; i++)
+        {
+            wReg[SWB_TMP_ADR + i] = *ptr++ << 8;
+            wReg[SWB_TMP_ADR + i] |= *ptr++;
+        }
+        break;
+
+    case 0x31: //漏水板
+        ptr = SWB_buffer + 4;
+        for (i = 0; i < 4; i++)
+        {
+            wReg[SWB_LEK_ADR + 2 * i] = (*ptr | 0xFF00) >> 8;
+            wReg[SWB_LEK_ADR + 2 * i + 1] = *ptr++ | 0x00FF;
+        }
+        break;
+    }
 
     SWB_COM_SUCS++;
     SWB_bRecv = 0;
-    SWB_curptr = 0;
 }
 
 //-------------------------------------------------------------------------------
@@ -208,6 +236,7 @@ void SWB_Task(void)
 //	@param	None
 //	@retval	None
 //-------------------------------------------------------------------------------
+int SWB_Frame_len = 100;
 void SWB_USART_IRQHandler(void)
 {
     u8 ch;

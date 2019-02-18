@@ -41,6 +41,7 @@
 
 void POW_Init(void);
 void POW_Task(void);
+void POW_TxCmd(void);
 
 void POW_USART_IRQHandler(void);
 
