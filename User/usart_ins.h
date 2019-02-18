@@ -31,21 +31,15 @@
 #define INS_USART_IRQHandler USART2_IRQHandler
 
 //----------------------------------------------------------------
-#define INS_BAUDRATE wReg[115]  //3#编码器通信速度
-#define INS_STATION wReg[116]   //3#编码器站地址
-#define INS_START_ADR wReg[117] //3#编码器参数首地址
-#define INS_REG_LEN wReg[118]   //3#编码器参数长度
+#define INS_BAUDRATE wReg[115]  //绝缘检测器通信速度
+#define INS_STATION wReg[116]   //绝缘检测器站地址
+#define INS_START_ADR wReg[117] //绝缘检测器参数首地址
+#define INS_REG_LEN wReg[118]   //绝缘检测器参数长度
 
-#define INS_CUR_ANG wReg[30]  //3#编码器当前角度
-#define INS_CUR_TICK wReg[31] //3#编码器当前角度
-#define INS_CUR_DETA wReg[32] //3#编码器当前角度
-#define INS_CUR_SPD wReg[33]  //3#编码器当前角度
-#define INS_LST_ANG wReg[34]  //3#编码器当前角度
-#define INS_LST_TICK wReg[35] //3#编码器当前角度
-#define INS_LST_DETA wReg[36] //3#编码器当前角度
-#define INS_AVG_SPD wReg[37]  //3#编码器当前角度
-#define INS_COM_FAIL wReg[38] //3#编码器当前角度
-#define INS_COM_SUCS wReg[39] //3#编码器当前角度
+#define INS_CUR_VAL wReg[36]  //3#编码器当前角度
+#define INS_CUR_TICK wReg[79] //3#编码器当前角度
+#define INS_COM_FAIL wReg[89] //3#编码器当前角度
+#define INS_COM_SUCS wReg[99] //3#编码器当前角度
 
 void INS_Init(void);
 void INS_TxCmd(void);

@@ -176,31 +176,12 @@ void INS_Task(void)
         return;
 
     tick = GetCurTick();
-    INS_LST_ANG = INS_CUR_ANG;   //上次编码器值
-    INS_LST_TICK = INS_CUR_TICK; //上次计时器值
-    INS_LST_DETA = INS_CUR_DETA; //上次角度变化值
-
-    INS_CUR_ANG = INS_buffer[3] << 0x08 | INS_buffer[4]; //本次编码器值
+    INS_CUR_VAL = INS_buffer[3] << 0x08 | INS_buffer[4]; //本次编码器值
     INS_CUR_TICK = tick - ulINSTick;                      //本次计时器值
-    ulINSTick = tick;                                      //保存计时器
-    INS_CUR_DETA = INS_CUR_ANG - INS_LST_ANG;            //本次角度变化量
-    if (INS_CUR_ANG < 1024 && INS_LST_ANG > 3072)
-    {
-        INS_CUR_DETA = INS_CUR_ANG - INS_LST_ANG + 4096;
-    }
-    if (INS_CUR_ANG > 3072 && INS_LST_ANG < 1024)
-    {
-        INS_CUR_DETA = INS_CUR_ANG - INS_LST_ANG - 4096;
-    }
-    if (INS_CUR_TICK != 0)
-        INS_CUR_SPD = INS_CUR_DETA * 1000 / INS_CUR_TICK; //本次速度
-
-    SpdQueueIn(&qINS, INS_CUR_DETA, INS_CUR_TICK);
-    INS_AVG_SPD = SpdQueueAvgVal(&qINS); //10次平均速度
+    ulINSTick = tick;  
 
     INS_COM_SUCS++;
     INS_bRecv = 0;
-    INS_curptr = 0;
 }
 
 //-------------------------------------------------------------------------------
