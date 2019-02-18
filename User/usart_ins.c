@@ -1,5 +1,4 @@
 #include "usart_ins.h"
-#include "spd_comm.h"
 #include "Modbus_svr.h"
 #include "SysTick.h"
 #include "stm32f4xx_conf.h"
@@ -11,11 +10,9 @@ uint8_t INS_frame[8] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 u8 INS_buffer[256];
 u8 INS_curptr;
 u8 INS_bRecv;
-u8 INS_frame_len = 85;
-u8 INS_bFirst = 1 ;
+u8 INS_frame_len;
+u8 INS_bFirst = 1;
 u32 ulINSTick = 0;
-
-SpeedValueQueue qINS;
 
 //-------------------------------------------------------------------------------
 //	@brief	中断初始化
@@ -121,8 +118,6 @@ void INS_Init(void)
     INS_COM_FAIL = 0;
     INS_frame_len = 2 * INS_REG_LEN + 5;
     ulINSTick = GetCurTick();
-
-    SpdQueueInit(&qINS);
 }
 
 //-------------------------------------------------------------------------------
@@ -147,10 +142,11 @@ void INS_TxCmd(void)
         INS_frame[3] = INS_START_ADR & 0x00ff;        //start address low
         INS_frame[4] = (INS_REG_LEN & 0xff00) >> 8;   //length high
         INS_frame[5] = INS_REG_LEN & 0x00ff;          //length low
-        uCRC = CRC16(INS_frame, 6);
-        INS_frame[6] = uCRC & 0x00FF;        //CRC low
-        INS_frame[7] = (uCRC & 0xFF00) >> 8; //CRC high
+        uCRC = CRC16(INS_frame, 6);                   //CRC计算
+        INS_frame[6] = uCRC & 0x00FF;                 //CRC low
+        INS_frame[7] = (uCRC & 0xFF00) >> 8;          //CRC high
         bChanged++;
+        INS_frame_len = 2 * INS_REG_LEN + 5;
         INS_bFirst = 0;
     }
 
@@ -176,9 +172,9 @@ void INS_Task(void)
         return;
 
     tick = GetCurTick();
-    INS_CUR_VAL = INS_buffer[3] << 0x08 | INS_buffer[4]; //本次编码器值
-    INS_CUR_TICK = tick - ulINSTick;                      //本次计时器值
-    ulINSTick = tick;  
+    INS_CUR_VAL = INS_buffer[3] << 0x08 | INS_buffer[4]; //本次绝缘值
+    INS_CUR_TICK = tick - ulINSTick;                     //本次计时器值
+    ulINSTick = tick;
 
     INS_COM_SUCS++;
     INS_bRecv = 0;
