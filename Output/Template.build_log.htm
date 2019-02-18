@@ -27,7 +27,26 @@ Project File Date:  02/18/2019
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\ExtProgram\keil\ARM\ARMCC\Bin'
 Build target '采矿车通信板2#'
-"..\..\Output\Template.axf" - 0 Error(s), 0 Warning(s).
+compiling usart_pow.c...
+..\..\User\usart_pow.c(154): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  		Usart_SendBytes(USART_POW, POW_Swbuf, 9);
+..\..\User\usart_pow.c(160): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  		Usart_SendBytes(USART_POW, POW_Txbuf, 8);
+..\..\User\usart_pow.c(137): warning:  #177-D: variable "uCRC"  was declared but never referenced
+  	u16 uCRC;
+..\..\User\usart_pow.c(189): warning:  #186-D: pointless comparison of unsigned integer with zero
+  	if (nStat < 0 || nStat >= POW_NUM)
+..\..\User\usart_pow.c(195): warning:  #513-D: a value of type "u16 *" cannot be assigned to an entity of type "short *"
+  		pVal = &wReg[POW_SAVE_ADR + nStat * 6];
+..\..\User\usart_pow.c(176): warning:  #177-D: variable "bErr"  was declared but never referenced
+  	int bErr, i;
+..\..\User\usart_pow.c(180): warning:  #177-D: variable "tick"  was declared but never referenced
+  	u32 tick;
+..\..\User\usart_pow.c: 7 warnings, 0 errors
+linking...
+Program Size: Code=7580 RO-data=972 RW-data=136 ZI-data=3592  
+FromELF: creating hex file...
+"..\..\Output\Template.axf" - 0 Error(s), 7 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -41,7 +60,7 @@ Package Vendor: Keil
   D:\ExtProgram\keil\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
