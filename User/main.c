@@ -39,10 +39,13 @@ int main(void)
 	TLT_Init();	//云台控制板通信初始化
 	INS_Init();	//绝缘检测通信初始化
 
-	SetTimer(0, 500);
-	SetTimer(1, 1000);
-	SetTimer(2, 100);
-	SetTimer(3, 1000);
+	SetTimer(0, 500);  //看门狗定时器
+	SetTimer(1, 1000); //保存参数定时器
+
+	SetTimer(2, 100);  //电源板定时器
+	SetTimer(3, 200);  //继电器板定时器
+	SetTimer(4, 500);  //云台控制板定时器
+	SetTimer(5, 1000); //绝缘检测板板定时器
 
 	IWDG_Configuration(); //看门狗初始
 
@@ -58,8 +61,6 @@ int main(void)
 		{
 			IWDG_Feed(); //看门狗复位
 			LOGGLE_LED2;
-			if (bChanged > 10)
-				bChanged = 0;
 		}
 
 		if (GetTimer(1) && bSaved)
@@ -68,13 +69,14 @@ int main(void)
 			bSaved = 0;
 		}
 
+		if (GetTimer(2))
+			POW_TxCmd(); //电源控制板发读取指令
 		if (GetTimer(3))
-		{
-			POW_TxCmd();
 			SWB_TxCmd(); //继电器板发读取指令
-			TLT_TxCmd(); //向3#编码器发读取指令
-			INS_TxCmd(); //向模拟量输出板发出指令
-		}
+		if (GetTimer(4))
+			TLT_TxCmd(); //云台控制板发读取指令
+		if (GetTimer(5))
+			INS_TxCmd(); //绝缘检测板发出指令
 	}
 }
 

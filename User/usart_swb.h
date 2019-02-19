@@ -39,6 +39,10 @@
 #define SWB_LEK_ADR 42  //漏水检测起始地址
 #define SWB_TMP_TICK 76
 #define SWB_LEK_TICK 77
+#define SWB_TMP_SUCS 86
+#define SWB_LEK_SUCS 87
+#define SWB_TMP_FAIL 96
+#define SWB_LEK_FAIL 97
 
 void SWB_Init(void);
 void SWB_TxCmd(void);

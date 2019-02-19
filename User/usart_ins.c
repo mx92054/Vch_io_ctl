@@ -145,7 +145,7 @@ void INS_TxCmd(void)
         uCRC = CRC16(INS_frame, 6);                   //CRC计算
         INS_frame[6] = uCRC & 0x00FF;                 //CRC low
         INS_frame[7] = (uCRC & 0xFF00) >> 8;          //CRC high
-        bChanged++;
+        bChanged = 0 ;
         INS_frame_len = 2 * INS_REG_LEN + 5;
         INS_bFirst = 0;
     }

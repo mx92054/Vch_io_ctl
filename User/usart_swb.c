@@ -140,8 +140,11 @@ void SWB_TxCmd(void)
 {
     int i;
 
-    if (SWB_bRecv == 1) //如果当前未完成接收，则通信错误计数器递增
-        SWB_COM_FAIL++;
+    if (SWB_bRecv == 1 && bComTmp == 0) //如果当前未完成接收，则通信错误计数器递增
+        wReg[SWB_TMP_FAIL]++;
+
+    if (SWB_bRecv == 1 && bComTmp == 1) //如果当前未完成接收，则通信错误计数器递增
+        wReg[SWB_LEK_FAIL]++;
 
     SWB_curptr = 0;
     SWB_bRecv = 1;
@@ -225,6 +228,7 @@ void SWB_Task(void)
         }
         wReg[SWB_TMP_TICK] = tick - ulTmpTick;
         ulTmpTick = tick;
+        wReg[SWB_TMP_SUCS]++;
         break;
 
     case 0x31: //漏水板
@@ -240,6 +244,9 @@ void SWB_Task(void)
         ptr++;
         wReg[SWB_LEK_ADR + 5] |= (*ptr & 0x03) << 1;
         wReg[SWB_LEK_ADR + 6] = (*ptr >> 2) & 0x07;
+        wReg[SWB_LEK_TICK] = tick - ulLekTick;
+        ulLekTick = tick;
+        wReg[SWB_LEK_SUCS]++;
         break;
     }
 
