@@ -37,6 +37,8 @@
 #define SWB_DOB_ADR 132 //继电器板起始地址
 #define SWB_TMP_ADR 37  //温度起始地址
 #define SWB_LEK_ADR 42  //漏水检测起始地址
+#define SWB_TMP_TICK 76
+#define SWB_LEK_TICK 77
 
 void SWB_Init(void);
 void SWB_TxCmd(void);

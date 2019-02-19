@@ -21,6 +21,8 @@ u8 curDOB = 0;                                                                  
 u8 bComTmp = 1;
 short sCurStatus[3];             //当前需要方面温度板
 short sLstStatus[3] = {0, 0, 0}; //当前开关量状态
+u32 ulTmpTick = 0;
+u32 ulLekTick = 0;
 
 //-------------------------------------------------------------------------------
 //	@brief	中断初始化
@@ -125,8 +127,8 @@ void SWB_Init(void)
     SWB_bRecv = 0;
     ulSWBTick = GetCurTick();
 
-    SWB_TMP_buf[6] = SWB_TMP_buf[3] + SWB_TMP_buf[4] + SWB_TMP_buf[5];
-    SWB_INS_buf[6] = SWB_INS_buf[3] + SWB_INS_buf[4] + SWB_INS_buf[5];
+    SWB_TMP_buf[6] = SWB_TMP_buf[3] ^ SWB_TMP_buf[4] ^ SWB_TMP_buf[5];
+    SWB_INS_buf[6] = SWB_INS_buf[3] ^ SWB_INS_buf[4] ^ SWB_INS_buf[5];
 }
 
 //-------------------------------------------------------------------------------
@@ -137,7 +139,6 @@ void SWB_Init(void)
 void SWB_TxCmd(void)
 {
     int i;
-    short *ptr;
 
     if (SWB_bRecv == 1) //如果当前未完成接收，则通信错误计数器递增
         SWB_COM_FAIL++;
@@ -145,22 +146,27 @@ void SWB_TxCmd(void)
     SWB_curptr = 0;
     SWB_bRecv = 1;
 
-    ptr = &wReg[SWB_DOB_ADR + 9 * curDOB];
+    curDOB = (curDOB + 1) % 3;
     sCurStatus[curDOB] = 0;
     for (i = 0; i < 9; i++)
     {
-        sCurStatus[curDOB] |= (*ptr++ == 0) ? 0x0000 : (0x0001 << i);
+        if (wReg[SWB_DOB_ADR + 9 * curDOB + i] != 0)
+            sCurStatus[curDOB] |= (0x0001 << i);
     }
 
     if (sCurStatus[curDOB] != sLstStatus[curDOB]) //继电器状态发生改变
     {
-        SWB_DOB_buf[3] = 0x30 - curDOB;
-        SWB_DOB_buf[6] = sCurStatus[curDOB] & 0x00FF;
-        SWB_DOB_buf[7] = (sCurStatus[curDOB] & 0xFF00) >> 8;
-        SWB_DOB_buf[8] = SWB_DOB_buf[3] + SWB_DOB_buf[4] +
-                         SWB_DOB_buf[5] + SWB_DOB_buf[6] + SWB_DOB_buf[7];
+        if (curDOB == 0)
+            SWB_DOB_buf[3] = 0x30;
+        if (curDOB == 1)
+            SWB_DOB_buf[3] = 0x29;
+        if (curDOB == 2)
+            SWB_DOB_buf[3] = 0x28;
+        SWB_DOB_buf[6] = (sCurStatus[curDOB] & 0xFF00) >> 8;
+        SWB_DOB_buf[7] = sCurStatus[curDOB] & 0x00FF;
+        SWB_DOB_buf[8] = SWB_DOB_buf[3] ^ SWB_DOB_buf[4] ^
+                         SWB_DOB_buf[5] ^ SWB_DOB_buf[6] ^ SWB_DOB_buf[7];
         Usart_SendBytes(USART_SWB, SWB_DOB_buf, 10);
-        curDOB = (curDOB + 1) % 3;
         SWB_frame_len = 8;
         return;
     }
@@ -187,13 +193,15 @@ void SWB_Task(void)
 {
     int i;
     u8 *ptr;
+    u32 tick;
 
-    if (SWB_curptr < SWB_frame_len)  // 未收到完整的數據幀
+    if (SWB_curptr < SWB_frame_len) // 未收到完整的數據幀
         return;
 
     if (SWB_buffer[0] != 0xFF || SWB_buffer[1] != 0xFF || SWB_buffer[2] != 0xA5)
         return; //幀格式錯誤
 
+    tick = GetCurTick();
     switch (SWB_buffer[3])
     {
     case 0x30: //1#继电器板
@@ -215,15 +223,23 @@ void SWB_Task(void)
             wReg[SWB_TMP_ADR + i] = *ptr++ << 8;
             wReg[SWB_TMP_ADR + i] |= *ptr++;
         }
+        wReg[SWB_TMP_TICK] = tick - ulTmpTick;
+        ulTmpTick = tick;
         break;
 
     case 0x31: //漏水板
         ptr = SWB_buffer + 4;
-        for (i = 0; i < 4; i++)
-        {
-            wReg[SWB_LEK_ADR + 2 * i] = (*ptr | 0xFF00) >> 8;
-            wReg[SWB_LEK_ADR + 2 * i + 1] = *ptr++ | 0x00FF;
-        }
+        wReg[SWB_LEK_ADR] = *ptr & 0x07;
+        wReg[SWB_LEK_ADR + 1] = (*ptr >> 3) & 0x07;
+        wReg[SWB_LEK_ADR + 2] = (*ptr >> 6) & 0x02);
+        ptr++;
+        wReg[SWB_LEK_ADR + 2] |= (*ptr & 0x01) << 2;
+        wReg[SWB_LEK_ADR + 3] = *ptr >> 2 & 0x07;
+        wReg[SWB_LEK_ADR + 4] = *ptr >> 5 & 0x07;
+        wReg[SWB_LEK_ADR + 5] = *ptr >> 7;
+        ptr++;
+        wReg[SWB_LEK_ADR + 5] |= (*ptr & 0x03) << 1;
+        wReg[SWB_LEK_ADR + 6] = (*ptr >> 2) & 0x07;
         break;
     }
 

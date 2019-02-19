@@ -120,7 +120,7 @@ void POW_Init(void)
 
 	for (i = 0; i < 2 * POW_NUM; i++)
 	{
-		uPowerStatus[i] = wReg[POW_SW_ADR + i];
+		uPowerStatus[i] = 0;
 		ulPowTicks[i / 2] = GetCurTick();
 	}
 

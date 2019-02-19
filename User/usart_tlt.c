@@ -1,5 +1,4 @@
 #include "usart_tlt.h"
-#include "spd_comm.h"
 #include "Modbus_svr.h"
 #include "SysTick.h"
 #include "stm32f4xx_conf.h"
@@ -14,8 +13,6 @@ u8 TLT_bRecv;
 u8 TLT_frame_len = 85;
 u8 TLT_bFirst = 1 ;
 u32 ulTLTTick = 0;
-
-SpeedValueQueue qTLT;
 
 //-------------------------------------------------------------------------------
 //	@brief	中断初始化
@@ -121,8 +118,6 @@ void TLT_Init(void)
     TLT_COM_FAIL = 0;
     TLT_frame_len = 2 * TLT_REG_LEN + 5;
     ulTLTTick = GetCurTick();
-
-    SpdQueueInit(&qTLT);
 }
 
 //-------------------------------------------------------------------------------
@@ -164,8 +159,6 @@ void TLT_TxCmd(void)
  */
 void TLT_Task(void)
 {
-    u32 tick;
-
     if (TLT_curptr < TLT_frame_len)
         return;
 
@@ -175,28 +168,6 @@ void TLT_Task(void)
     if (TLT_buffer[2] != 2 * TLT_REG_LEN) //数值长度判读
         return;
 
-    tick = GetCurTick();
-    TLT_LST_ANG = TLT_CUR_ANG;   //上次编码器值
-    TLT_LST_TICK = TLT_CUR_TICK; //上次计时器值
-    TLT_LST_DETA = TLT_CUR_DETA; //上次角度变化值
-
-    TLT_CUR_ANG = TLT_buffer[3] << 0x08 | TLT_buffer[4]; //本次编码器值
-    TLT_CUR_TICK = tick - ulTLTTick;                      //本次计时器值
-    ulTLTTick = tick;                                      //保存计时器
-    TLT_CUR_DETA = TLT_CUR_ANG - TLT_LST_ANG;            //本次角度变化量
-    if (TLT_CUR_ANG < 1024 && TLT_LST_ANG > 3072)
-    {
-        TLT_CUR_DETA = TLT_CUR_ANG - TLT_LST_ANG + 4096;
-    }
-    if (TLT_CUR_ANG > 3072 && TLT_LST_ANG < 1024)
-    {
-        TLT_CUR_DETA = TLT_CUR_ANG - TLT_LST_ANG - 4096;
-    }
-    if (TLT_CUR_TICK != 0)
-        TLT_CUR_SPD = TLT_CUR_DETA * 1000 / TLT_CUR_TICK; //本次速度
-
-    SpdQueueIn(&qTLT, TLT_CUR_DETA, TLT_CUR_TICK);
-    TLT_AVG_SPD = SpdQueueAvgVal(&qTLT); //10次平均速度
 
     TLT_COM_SUCS++;
     TLT_bRecv = 0;

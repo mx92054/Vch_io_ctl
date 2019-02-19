@@ -42,7 +42,7 @@ int main(void)
 	SetTimer(0, 500);
 	SetTimer(1, 1000);
 	SetTimer(2, 100);
-	SetTimer(3, 100);
+	SetTimer(3, 1000);
 
 	IWDG_Configuration(); //ø¥√≈π∑≥ı º
 

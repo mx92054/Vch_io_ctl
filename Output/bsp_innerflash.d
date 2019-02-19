@@ -2,7 +2,7 @@
 ..\..\output\bsp_innerflash.o: ..\..\User\bsp_innerflash.h
 ..\..\output\bsp_innerflash.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 ..\..\output\bsp_innerflash.o: ..\..\Libraries\CMSIS\Include\core_cm4.h
-..\..\output\bsp_innerflash.o: D:\ExtProgram\keil\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\bsp_innerflash.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\bsp_innerflash.o: ..\..\Libraries\CMSIS\Include\core_cmInstr.h
 ..\..\output\bsp_innerflash.o: ..\..\Libraries\CMSIS\Include\core_cmFunc.h
 ..\..\output\bsp_innerflash.o: ..\..\Libraries\CMSIS\Include\core_cmSimd.h

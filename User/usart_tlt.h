@@ -31,21 +31,11 @@
 #define TLT_USART_IRQHandler UART7_IRQHandler
 
 //----------------------------------------------------------------
-#define TLT_BAUDRATE wReg[111]  //2#编码器通信速度
-#define TLT_STATION wReg[112]   //2#编码器站地址
-#define TLT_START_ADR wReg[113] //2#编码器参数首地址
-#define TLT_REG_LEN wReg[114]   //2#编码器参数长度
+#define TLT_BAUDRATE wReg[111]  //云台通信速度
 
-#define TLT_CUR_ANG wReg[20]  //2#编码器当前角度
-#define TLT_CUR_TICK wReg[21] //2#编码器当前角度
-#define TLT_CUR_DETA wReg[22] //2#编码器当前角度
-#define TLT_CUR_SPD wReg[23]  //2#编码器当前角度
-#define TLT_LST_ANG wReg[24]  //2#编码器当前角度
-#define TLT_LST_TICK wReg[25] //2#编码器当前角度
-#define TLT_LST_DETA wReg[26] //2#编码器当前角度
-#define TLT_AVG_SPD wReg[27]  //2#编码器当前角度
-#define TLT_COM_FAIL wReg[28] //2#编码器当前角度
-#define TLT_COM_SUCS wReg[29] //2#编码器当前角度
+
+#define TLT_COM_FAIL 88 //2#编码器当前角度
+#define TLT_COM_SUCS 98 //2#编码器当前角度
 
 void TLT_Init(void);
 void TLT_TxCmd(void);
