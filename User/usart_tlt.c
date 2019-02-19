@@ -6,12 +6,16 @@
 extern u8 bChanged;
 extern short wReg[];
 
-uint8_t TLT_frame[8] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
+uint8_t TLT_frame[21] = {0xFF, 0xFF, 0xA5, 0x40,
+                         0x11, 0x11, 0x22, 0x22,
+                         0x33, 0x33, 0x44, 0x44,
+                         0x55, 0x55, 0x66, 0x66,
+                         0xBC, 0xBC, 0xBC, 0xCC, 0x26};
 u8 TLT_buffer[256];
 u8 TLT_curptr;
 u8 TLT_bRecv;
 u8 TLT_frame_len = 85;
-u8 TLT_bFirst = 1 ;
+u8 TLT_bFirst = 1;
 u32 ulTLTTick = 0;
 
 //-------------------------------------------------------------------------------
@@ -113,10 +117,10 @@ void TLT_Init(void)
     }
     TLT_Config(TLT_BAUDRATE);
 
+    TLT_frame_len = 14;
     TLT_curptr = 0;
     TLT_bRecv = 0;
     TLT_COM_FAIL = 0;
-    TLT_frame_len = 2 * TLT_REG_LEN + 5;
     ulTLTTick = GetCurTick();
 }
 
@@ -127,7 +131,7 @@ void TLT_Init(void)
 //-------------------------------------------------------------------------------
 void TLT_TxCmd(void)
 {
-    u16 uCRC;
+    u16 i;
 
     if (TLT_bRecv == 1) //如果当前未完成接收，则通信错误计数器递增
         TLT_COM_FAIL++;
@@ -135,21 +139,20 @@ void TLT_TxCmd(void)
     TLT_curptr = 0;
     TLT_bRecv = 1;
 
-    if (bChanged || TLT_bFirst)
-    {
-        TLT_frame[0] = TLT_STATION;                   //station number
-        TLT_frame[2] = (TLT_START_ADR & 0xff00) >> 8; //start address high
-        TLT_frame[3] = TLT_START_ADR & 0x00ff;        //start address low
-        TLT_frame[4] = (TLT_REG_LEN & 0xff00) >> 8;   //length high
-        TLT_frame[5] = TLT_REG_LEN & 0x00ff;          //length low
-        uCRC = CRC16(TLT_frame, 6);
-        TLT_frame[6] = uCRC & 0x00FF;        //CRC low
-        TLT_frame[7] = (uCRC & 0xFF00) >> 8; //CRC high
-        bChanged++;
-        TLT_bFirst = 0;
-    }
+    TLT_frame[4] = wReg[TLT_REG_ADR];
+    TLT_frame[5] = wReg[TLT_REG_ADR + 1];
+    TLT_frame[6] = wReg[TLT_REG_ADR + 2];
+    TLT_frame[7] = wReg[TLT_REG_ADR + 3];
 
-    Usart_SendBytes(USART_TLT, TLT_frame, 8);
+    TLT_frame[16] = wReg[TLT_REG_ADR + 4];
+    TLT_frame[17] = wReg[TLT_REG_ADR + 5];
+    TLT_frame[18] = wReg[TLT_REG_ADR + 6];
+
+    TLT_frame[19] = TLT_frame[3];
+    for (i = 4; i < 18; i++)
+        TLT_frame[19] ^= TLT_frame[i];
+
+    Usart_SendBytes(USART_TLT, TLT_frame, 21);
 }
 
 /*
@@ -159,15 +162,28 @@ void TLT_TxCmd(void)
  */
 void TLT_Task(void)
 {
-    if (TLT_curptr < TLT_frame_len)
+    u8 *ptr, i;
+    u32 tick;
+
+    if (TLT_curptr < TLT_frame_len) // 未收到完整的數據幀
         return;
 
-    if (TLT_buffer[0] != TLT_STATION || TLT_buffer[1] != 0x03) //站地址判断
-        return;
+    if (TLT_buffer[0] != 0xFF || TLT_buffer[1] != 0xFF || TLT_buffer[2] != 0xA5)
+        return; //幀格式錯誤
 
-    if (TLT_buffer[2] != 2 * TLT_REG_LEN) //数值长度判读
-        return;
+    if (TLT_buffer[3] != 0x40)
+        return; //地址错误
 
+    ptr = TLT_buffer + 4;
+    for (i = 0; i < 4; i++)
+    {
+        wReg[TLT_REG_VAL + i] = *ptr++ << 8;
+        wReg[TLT_REG_VAL + i] |= *ptr++;
+    }
+
+    tick = GetCurTick();
+    TLT_COM_TCK = tick - ulTLTTick;
+    ulTLTTick = tick;
 
     TLT_COM_SUCS++;
     TLT_bRecv = 0;

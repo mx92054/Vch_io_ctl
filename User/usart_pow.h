@@ -31,7 +31,7 @@
 #define POW_USART_IRQHandler USART6_IRQHandler
 
 //--------------------------------------------------------------------
-#define POW_NUM 5              //電源板數目
+#define POW_NUM 6              //電源板數目
 #define POW_SAVE_ADR 0         // 电源板参数在wReg中的起始地址
 #define POW_BAUDRATE wReg[103] //通信波特率
 #define POW_COM_TIM 70         //通信成功间隔寄存器地址

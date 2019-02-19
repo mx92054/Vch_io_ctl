@@ -231,7 +231,7 @@ void SWB_Task(void)
         ptr = SWB_buffer + 4;
         wReg[SWB_LEK_ADR] = *ptr & 0x07;
         wReg[SWB_LEK_ADR + 1] = (*ptr >> 3) & 0x07;
-        wReg[SWB_LEK_ADR + 2] = (*ptr >> 6) & 0x02);
+        wReg[SWB_LEK_ADR + 2] = (*ptr >> 6) & 0x02;
         ptr++;
         wReg[SWB_LEK_ADR + 2] |= (*ptr & 0x01) << 2;
         wReg[SWB_LEK_ADR + 3] = *ptr >> 2 & 0x07;
