@@ -39,7 +39,7 @@ int main(void)
 	TLT_Init();	//云台控制板通信初始化
 	INS_Init();	//绝缘检测通信初始化
 
-	SetTimer(0, 500);  //看门狗定时器
+	SetTimer(0, 100);  //看门狗定时器
 	SetTimer(1, 1000); //保存参数定时器
 
 	SetTimer(2, 100);  //电源板定时器

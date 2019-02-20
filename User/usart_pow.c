@@ -156,7 +156,7 @@ void POW_TxCmd(void)
 		POW_Swbuf[7] = POW_Swbuf[3] + POW_Swbuf[4] +		 //checksum
 					   POW_Swbuf[5] + POW_Swbuf[6];			 //checksum
 		Usart_SendBytes(USART_POW, POW_Swbuf, 9);
-		POW_Frame_len = 9;
+		POW_Frame_len = 11;
 	}
 	else
 	{															   //电源板状态查询
@@ -211,8 +211,8 @@ void POW_Task(void)
 
 	if (POW_buffer[4] == 0x82) //是控制电源开关指令
 	{
-		uPowerStatus[2 * nStat] = wReg[POW_SW_ADR + 2 * i];
-		uPowerStatus[2 * nStat + 1] = wReg[POW_SW_ADR + 2 * i + 1];
+		uPowerStatus[2 * nStat] = wReg[POW_SW_ADR + 2 * nStat];
+		uPowerStatus[2 * nStat + 1] = wReg[POW_SW_ADR + 2 * nStat + 1];
 	}
 
 	POW_bRecv = 0;

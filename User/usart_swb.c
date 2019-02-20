@@ -165,12 +165,17 @@ void SWB_TxCmd(void)
             SWB_DOB_buf[3] = 0x29;
         if (curDOB == 2)
             SWB_DOB_buf[3] = 0x28;
-        SWB_DOB_buf[6] = (sCurStatus[curDOB] & 0xFF00) >> 8;
-        SWB_DOB_buf[7] = sCurStatus[curDOB] & 0x00FF;
+        SWB_DOB_buf[6] = sCurStatus[curDOB] & 0x00FF;
+        SWB_DOB_buf[7] = (sCurStatus[curDOB] & 0xFF00) >> 8;
         SWB_DOB_buf[8] = SWB_DOB_buf[3] ^ SWB_DOB_buf[4] ^
                          SWB_DOB_buf[5] ^ SWB_DOB_buf[6] ^ SWB_DOB_buf[7];
         Usart_SendBytes(USART_SWB, SWB_DOB_buf, 10);
         SWB_frame_len = 8;
+
+        wReg[170] = sCurStatus[curDOB] ;
+        wReg[171] = sLstStatus[curDOB] ;
+        wReg[172] = curDOB ;
+
         return;
     }
 
@@ -208,14 +213,17 @@ void SWB_Task(void)
     switch (SWB_buffer[3])
     {
     case 0x30: //1#继电器板
+        wReg[171] = sCurStatus[0] ;
         sLstStatus[0] = sCurStatus[0];
         break;
 
     case 0x29: //2#继电器板
+        wReg[171] = sCurStatus[1] ;
         sLstStatus[1] = sCurStatus[1];
         break;
 
     case 0x28: //3#继电器板
+        wReg[171] = sCurStatus[2] ;
         sLstStatus[2] = sCurStatus[2];
         break;
 
@@ -235,16 +243,17 @@ void SWB_Task(void)
         ptr = SWB_buffer + 4;
         wReg[SWB_LEK_ADR] = *ptr & 0x07;
         wReg[SWB_LEK_ADR + 1] = (*ptr >> 3) & 0x07;
-        wReg[SWB_LEK_ADR + 2] = (*ptr >> 6) & 0x02;
+        wReg[SWB_LEK_ADR + 2] = (*ptr >> 6) & 0x03;
         ptr++;
         wReg[SWB_LEK_ADR + 2] |= (*ptr & 0x01) << 2;
-        wReg[SWB_LEK_ADR + 3] = *ptr >> 2 & 0x07;
-        wReg[SWB_LEK_ADR + 4] = *ptr >> 5 & 0x07;
+        wReg[SWB_LEK_ADR + 3] = *ptr >> 1 & 0x07;
+        wReg[SWB_LEK_ADR + 4] = *ptr >> 4 & 0x07;
         wReg[SWB_LEK_ADR + 5] = *ptr >> 7;
         ptr++;
         wReg[SWB_LEK_ADR + 5] |= (*ptr & 0x03) << 1;
         wReg[SWB_LEK_ADR + 6] = (*ptr >> 2) & 0x07;
         wReg[SWB_LEK_TICK] = tick - ulLekTick;
+
         ulLekTick = tick;
         wReg[SWB_LEK_SUCS]++;
         break;
