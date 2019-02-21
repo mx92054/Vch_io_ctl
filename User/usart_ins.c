@@ -177,6 +177,7 @@ void INS_Task(void)
     ulINSTick = tick;
 
     INS_COM_SUCS++;
+    INS_curptr = 0 ;
     INS_bRecv = 0;
 }
 

@@ -215,6 +215,7 @@ void POW_Task(void)
 		uPowerStatus[2 * nStat + 1] = wReg[POW_SW_ADR + 2 * nStat + 1];
 	}
 
+	POW_curptr = 0;
 	POW_bRecv = 0;
 }
 

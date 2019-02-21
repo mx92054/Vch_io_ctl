@@ -36,10 +36,10 @@
 #define INS_START_ADR wReg[117] //绝缘检测器参数首地址
 #define INS_REG_LEN wReg[118]   //绝缘检测器参数长度
 
-#define INS_CUR_VAL wReg[36]  //3#编码器当前角度
-#define INS_CUR_TICK wReg[79] //3#编码器当前角度
-#define INS_COM_FAIL wReg[89] //3#编码器当前角度
-#define INS_COM_SUCS wReg[99] //3#编码器当前角度
+#define INS_CUR_VAL wReg[36]  //绝缘检测器
+#define INS_CUR_TICK wReg[79] //绝缘检测器
+#define INS_COM_FAIL wReg[99] //绝缘检测器
+#define INS_COM_SUCS wReg[89] //绝缘检测器
 
 void INS_Init(void);
 void INS_TxCmd(void);

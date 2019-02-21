@@ -1824,7 +1824,7 @@ Image Symbol Table
     i.SWB_NVIC_Configuration                 0x080012a4   Section        0  usart_swb.o(i.SWB_NVIC_Configuration)
     SWB_NVIC_Configuration                   0x080012a5   Thumb Code    40  usart_swb.o(i.SWB_NVIC_Configuration)
     i.SWB_Task                               0x080012cc   Section        0  usart_swb.o(i.SWB_Task)
-    i.SWB_TxCmd                              0x080013dc   Section        0  usart_swb.o(i.SWB_TxCmd)
+    i.SWB_TxCmd                              0x080013e0   Section        0  usart_swb.o(i.SWB_TxCmd)
     i.SetSysClock                            0x08001500   Section        0  system_stm32f4xx.o(i.SetSysClock)
     SetSysClock                              0x08001501   Thumb Code   196  system_stm32f4xx.o(i.SetSysClock)
     i.SetTimer                               0x080015d4   Section        0  systick.o(i.SetTimer)
@@ -2060,7 +2060,7 @@ Image Symbol Table
     GetTimer                                 0x08000635   Thumb Code    34  systick.o(i.GetTimer)
     HardFault_Handler                        0x0800065d   Thumb Code     2  stm32f4xx_it.o(i.HardFault_Handler)
     INS_Init                                 0x08000709   Thumb Code    72  usart_ins.o(i.INS_Init)
-    INS_Task                                 0x08000781   Thumb Code    82  usart_ins.o(i.INS_Task)
+    INS_Task                                 0x08000781   Thumb Code    84  usart_ins.o(i.INS_Task)
     INS_TxCmd                                0x080007e1   Thumb Code   118  usart_ins.o(i.INS_TxCmd)
     IWDG_Configuration                       0x08000869   Thumb Code    36  gpio.o(i.IWDG_Configuration)
     IWDG_Enable                              0x0800088d   Thumb Code    10  stm32f4xx_iwdg.o(i.IWDG_Enable)
@@ -2079,7 +2079,7 @@ Image Symbol Table
     NVIC_PriorityGroupConfig                 0x08000d61   Thumb Code    10  misc.o(i.NVIC_PriorityGroupConfig)
     Normal_response                          0x08000d75   Thumb Code    74  modbus_svr.o(i.Normal_response)
     POW_Init                                 0x08000e71   Thumb Code    88  usart_pow.o(i.POW_Init)
-    POW_Task                                 0x08000efd   Thumb Code   186  usart_pow.o(i.POW_Task)
+    POW_Task                                 0x08000efd   Thumb Code   188  usart_pow.o(i.POW_Task)
     POW_TxCmd                                0x08000fc9   Thumb Code   196  usart_pow.o(i.POW_TxCmd)
     PendSV_Handler                           0x0800109d   Thumb Code     2  stm32f4xx_it.o(i.PendSV_Handler)
     RCC_AHB1PeriphClockCmd                   0x080010a1   Thumb Code    22  stm32f4xx_rcc.o(i.RCC_AHB1PeriphClockCmd)
@@ -2088,8 +2088,8 @@ Image Symbol Table
     RCC_GetClocksFreq                        0x080010f5   Thumb Code   148  stm32f4xx_rcc.o(i.RCC_GetClocksFreq)
     SVC_Handler                              0x08001199   Thumb Code     2  stm32f4xx_it.o(i.SVC_Handler)
     SWB_Init                                 0x08001245   Thumb Code    88  usart_swb.o(i.SWB_Init)
-    SWB_Task                                 0x080012cd   Thumb Code   260  usart_swb.o(i.SWB_Task)
-    SWB_TxCmd                                0x080013dd   Thumb Code   278  usart_swb.o(i.SWB_TxCmd)
+    SWB_Task                                 0x080012cd   Thumb Code   262  usart_swb.o(i.SWB_Task)
+    SWB_TxCmd                                0x080013e1   Thumb Code   274  usart_swb.o(i.SWB_TxCmd)
     SetTimer                                 0x080015d5   Thumb Code    20  systick.o(i.SetTimer)
     SysTick_Handler                          0x080015ed   Thumb Code    54  systick.o(i.SysTick_Handler)
     SysTick_Init                             0x0800162d   Thumb Code    90  systick.o(i.SysTick_Init)
@@ -2270,8 +2270,8 @@ Memory Map of the image
     0x0800119c   0x000000a8   Code   RO         5755    i.SWB_Config        usart_swb.o
     0x08001244   0x00000060   Code   RO         5756    i.SWB_Init          usart_swb.o
     0x080012a4   0x00000028   Code   RO         5757    i.SWB_NVIC_Configuration  usart_swb.o
-    0x080012cc   0x00000110   Code   RO         5758    i.SWB_Task          usart_swb.o
-    0x080013dc   0x00000124   Code   RO         5759    i.SWB_TxCmd         usart_swb.o
+    0x080012cc   0x00000114   Code   RO         5758    i.SWB_Task          usart_swb.o
+    0x080013e0   0x00000120   Code   RO         5759    i.SWB_TxCmd         usart_swb.o
     0x08001500   0x000000d4   Code   RO           13    i.SetSysClock       system_stm32f4xx.o
     0x080015d4   0x00000018   Code   RO         5457    i.SetTimer          systick.o
     0x080015ec   0x00000040   Code   RO         5458    i.SysTick_Handler   systick.o
@@ -2359,13 +2359,13 @@ Image component sizes
        360          8          0          0          0       6249   stm32f4xx_usart.o
        304         34          0         20          0     285585   system_stm32f4xx.o
        244         40          0          8         50      29930   systick.o
-       600         62          0         16        256       4297   usart_ins.o
-       804         68          0         21        304       4875   usart_pow.o
-       948         56          0         58        256       5082   usart_swb.o
+       600         60          0         16        256       4297   usart_ins.o
+       804         66          0         21        304       4875   usart_pow.o
+       948         58          0         58        256       5086   usart_swb.o
        588         58          0         29        256       4368   usart_tlt.o
 
     ----------------------------------------------------------------------
-      7000        652        972        192       3464     377387   Object Totals
+      7000        650        972        192       3464     377391   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         16          0          0          8          6          0   (incl. Padding)
 
@@ -2406,9 +2406,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      7524        678        972        192       3464     369787   Grand Totals
-      7524        678        972        192       3464     369787   ELF Image Totals
-      7524        678        972        192          0          0   ROM Totals
+      7524        676        972        192       3464     369791   Grand Totals
+      7524        676        972        192       3464     369791   ELF Image Totals
+      7524        676        972        192          0          0   ROM Totals
 
 ==============================================================================
 

@@ -172,9 +172,9 @@ void SWB_TxCmd(void)
         Usart_SendBytes(USART_SWB, SWB_DOB_buf, 10);
         SWB_frame_len = 8;
 
-        wReg[170] = sCurStatus[curDOB] ;
-        wReg[171] = sLstStatus[curDOB] ;
-        wReg[172] = curDOB ;
+        wReg[170] = sCurStatus[curDOB];
+        wReg[171] = sLstStatus[curDOB];
+        wReg[172] = curDOB;
 
         return;
     }
@@ -190,6 +190,8 @@ void SWB_TxCmd(void)
         SWB_frame_len = 10;
     }
     bComTmp = (bComTmp + 1) % 2;
+
+    SWB_curptr = 0;
 }
 
 /*
@@ -213,17 +215,17 @@ void SWB_Task(void)
     switch (SWB_buffer[3])
     {
     case 0x30: //1#继电器板
-        wReg[171] = sCurStatus[0] ;
+        wReg[171] = sCurStatus[0];
         sLstStatus[0] = sCurStatus[0];
         break;
 
     case 0x29: //2#继电器板
-        wReg[171] = sCurStatus[1] ;
+        wReg[171] = sCurStatus[1];
         sLstStatus[1] = sCurStatus[1];
         break;
 
     case 0x28: //3#继电器板
-        wReg[171] = sCurStatus[2] ;
+        wReg[171] = sCurStatus[2];
         sLstStatus[2] = sCurStatus[2];
         break;
 
@@ -259,6 +261,7 @@ void SWB_Task(void)
         break;
     }
 
+    SWB_curptr = 0;
     SWB_COM_SUCS++;
     SWB_bRecv = 0;
 }
