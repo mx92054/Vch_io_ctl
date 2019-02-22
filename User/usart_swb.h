@@ -32,8 +32,6 @@
 
 //----------------------------------------------------------------
 #define SWB_BAUDRATE wReg[107] //1#编码器通信速度
-#define SWB_COM_FAIL wReg[86]
-#define SWB_COM_SUCS wReg[96] 
 #define SWB_DOB_ADR 132 //继电器板起始地址
 #define SWB_TMP_ADR 37  //温度起始地址
 #define SWB_LEK_ADR 42  //漏水检测起始地址

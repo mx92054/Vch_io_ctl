@@ -1,4 +1,4 @@
---cpu=Cortex-M4.fp
+--cpu Cortex-M4.fp
 "..\..\output\startup_stm32f429_439xx.o"
 "..\..\output\system_stm32f4xx.o"
 "..\..\output\misc.o"

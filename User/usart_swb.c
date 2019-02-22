@@ -256,13 +256,13 @@ void SWB_Task(void)
         wReg[SWB_LEK_ADR + 6] = (*ptr >> 2) & 0x07;
         wReg[SWB_LEK_TICK] = tick - ulLekTick;
 
+        wReg[SWB_LEK_TICK] = tick - ulTmpTick;
         ulLekTick = tick;
         wReg[SWB_LEK_SUCS]++;
         break;
     }
 
     SWB_curptr = 0;
-    SWB_COM_SUCS++;
     SWB_bRecv = 0;
 }
 

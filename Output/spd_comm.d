@@ -2,7 +2,7 @@
 ..\..\output\spd_comm.o: ..\..\User\spd_comm.h
 ..\..\output\spd_comm.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 ..\..\output\spd_comm.o: ..\..\Libraries\CMSIS\Include\core_cm4.h
-..\..\output\spd_comm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\spd_comm.o: D:\Program\Keil\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\spd_comm.o: ..\..\Libraries\CMSIS\Include\core_cmInstr.h
 ..\..\output\spd_comm.o: ..\..\Libraries\CMSIS\Include\core_cmFunc.h
 ..\..\output\spd_comm.o: ..\..\Libraries\CMSIS\Include\core_cmSimd.h
