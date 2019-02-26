@@ -189,8 +189,8 @@ void SWB_TxCmd(void)
         Usart_SendBytes(USART_SWB, SWB_INS_buf, 8);
         SWB_frame_len = 10;
     }
-    bComTmp = (bComTmp + 1) % 2;
 
+    bComTmp = (bComTmp + 1) % 2;
     SWB_curptr = 0;
 }
 

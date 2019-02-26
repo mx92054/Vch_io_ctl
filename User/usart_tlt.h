@@ -34,8 +34,8 @@
 #define TLT_BAUDRATE wReg[111] //云台通信速度
 
 #define TLT_COM_TCK wReg[78]  //云台通信间隔时间
-#define TLT_COM_FAIL wReg[88] //云台当前角度
-#define TLT_COM_SUCS wReg[98] //云台当前角度
+#define TLT_COM_SUCS wReg[88] //云台通信成功次数
+#define TLT_COM_FAIL wReg[98] //云台通信失败次数
 
 #define TLT_REG_ADR 160     //命令寄存器开始地址
 #define TLT_REG_VAL 50      //状态寄存器开始地址

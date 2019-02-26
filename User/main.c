@@ -26,6 +26,7 @@ extern u8 bChanged;
 
 int main(void)
 {
+	int i;
 
 	SysTick_Init();												  //tick定时器初始
 	GPIO_Config();												  //GPIO初始化
@@ -47,7 +48,10 @@ int main(void)
 	SetTimer(4, 500);  //云台控制板定时器
 	SetTimer(5, 1000); //绝缘检测板板定时器
 
-	IWDG_Configuration(); //看门狗初始
+	for (i = 120; i < 159; i++)
+		wReg[i] = 0;
+
+		IWDG_Configuration(); //看门狗初始
 
 	while (1)
 	{
